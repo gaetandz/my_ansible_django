@@ -1,0 +1,26 @@
+---
+
+- name: install and configure webservers
+  hosts: webservers
+  remote_user: root
+  roles:
+        - webservers
+
+- name: install and configure dbservers
+  hosts: webservers
+  remote_user: root
+  roles:
+        - dbservers
+
+- name: configure django app
+  hosts: webservers
+  remote_user: root
+  roles:
+        - djangoapp
+
+#- name: install and configure virtualenv
+#  hosts: webservers
+#  remote_user: root
+#  roles:
+#        - virtualenv
+

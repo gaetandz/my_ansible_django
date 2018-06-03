@@ -1,0 +1,7 @@
+userpwd: $1$!éé,kK$fnL3dUydP1Kod.6O8V5uC/
+user: django
+virtualenv: cluepoints
+user_directory: /home/{{user}}
+virtualenv_directory: "{{user_directory}}/{{virtualenv}}"
+django_directory: "{{virtualenv_directory}}/my_django_repo"
+

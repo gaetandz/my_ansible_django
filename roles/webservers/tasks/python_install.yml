@@ -1,0 +1,19 @@
+---
+
+#- when: python_installed_version is failed 
+#  block: 
+- name: download python 3.6
+  get_url: 
+    url: "https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz"
+    dest: "/tmp/Python-3.6.5.tgz"
+
+- name: Extracting Python
+  unarchive: 
+    src: "/tmp/Python-3.6.5.tgz" 
+    dest: /tmp/
+    creates: "/tmp/Python-3.6.5/README.md"
+    copy: false
+
+- name: Install Python 
+  shell: cd "/tmp/Python-3.6.5/" && ./configure --enable-optimizations && make && make install
+

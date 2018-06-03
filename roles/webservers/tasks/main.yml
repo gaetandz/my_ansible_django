@@ -1,0 +1,34 @@
+---
+#This task installs and enables apache on webservers
+- include_tasks: configure_user.yml
+
+- name: ensure apache is installed
+  yum: pkg=httpd state=latest
+- name: ensure apache is running
+  service: name=httpd state=started enabled=yes
+  notify: restart apache
+- name: ensure git is installed
+  yum: pkg=git state=latest
+- name: install some packages
+  yum:
+    name:
+      - wget
+      - mod_wsgi
+      - gcc
+      - vim
+      - openssl-devel
+      - bzip2-devel
+
+- name: Get Python installed version
+  command: python3.6 --version
+  ignore_errors: True
+  changed_when: false
+  failed_when: false
+  register: python_installed_version
+
+#- name: Force install if the version numbers do not match
+#  set_fact:
+#    python_reinstall_from_source: true
+#  when: '(python_installed_version is success and (python_installed_version.stdout | regex_replace("^.*([0-9\.]+).*$","\\1") is version_compare(python_version, operator="!=")))'
+
+- include_tasks: python_install.yml

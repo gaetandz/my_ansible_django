@@ -1,0 +1,13 @@
+---
+
+#- name: Verify if virtualenv exist
+#  command: "ls {{virtualenv_directory}}/bin/activate"
+#  ignore_errors: True
+#  register: virtualenv_exist 
+
+#- name: Install virtualenv
+#  become: yes
+#  become_user: "{{user}}"
+#  shell: "python3.6 -m pip install virtualenv && virtualenv cluepoints" 
+#  when: virtualenv_exist is failed
+

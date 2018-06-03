@@ -1,0 +1,53 @@
+---
+#This task installs and enables apache on webservers
+- name: ensure apache is installed
+  yum: pkg=httpd state=latest
+- name: ensure apache is running
+  service: name=httpd state=started enabled=yes
+- name: copy files to document root
+  copy: src=cloud.png dest=/var/www/html/cloud.png
+- name: copy application code to document root
+  template: src=index.html.j2 dest=/var/www/html/index.html
+  notify: restart apache
+- name: ensure git is installed
+  yum: pkg=git state=latest
+- name: install some packages
+  yum:
+    name:
+      - wget
+      - postgresql-server
+      - postgresql-contrib
+      - python-psycopg2
+      - gcc
+      - vim
+
+- name: download python 3.6
+  get_url: 
+    url: "https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz"
+    dest: "/tmp/Python-3.6.5.tgz"
+
+- name: Extracting Python
+  unarchive: 
+    src: "/tmp/Python-3.6.5.tgz" 
+    dest: /tmp/
+    creates: "/tmp/Python-3.6.5/README.md"
+    copy: false
+
+- name: Configure Python
+  command: ./configure --enable-optimizations
+  args:
+    chdir: "/tmp/Python-3.6.5"
+    creates: "/tmp/Python-3.6.5/config.status"
+
+- name: Build Python
+  command: make
+  args:
+    chdir: "/tmp/Python-3.6.5"
+    creates: "/tmp/Python-3.6.5/Python"
+
+- name: Install Python
+  become: yes
+  command: "make install"
+  args:
+    chdir: "/tmp/Python-3.6.5"
+

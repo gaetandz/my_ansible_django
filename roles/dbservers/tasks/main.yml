@@ -1,0 +1,53 @@
+---
+- name: Install Postgresql
+  yum:
+    name:
+         - postgresql-server
+         - postgresql-contrib
+         - python-psycopg2
+
+- name: Install requirement
+  shell: "python3.6 -m pip install psycopg2-binary"
+
+- name: Initiate database
+  command: service postgresql initdb
+              creates=/var/lib/pgsql/data/postgresql.conf
+
+- name: Start PostgreSQL and enable at boot
+  service: name=postgresql
+              enabled=yes
+              state=started
+
+- name: Ensure PostgreSQL is listening on all localhost
+  lineinfile:
+    dest: /var/lib/pgsql/data/postgresql.conf
+    regexp: '^#?listen_addresses\s*='
+    line: "listen_addresses = '127.0.0.1'"
+    state: present
+  notify: restart postgresql
+
+- lineinfile: dest=/var/lib/pgsql/data/pg_hba.conf
+                 regexp='host\s+all\s+all\s+127.0.0.1/32\s+md5'
+                 line='host all all 127.0.0.1/32 md5'
+                 insertbefore=BOF
+  notify: restart postgresql
+
+- name: ensure database is created
+  become: yes
+  become_user: postgres
+  postgresql_db: name={{dbname}}
+
+- name: ensure user has access to database
+  become: yes
+  become_user: postgres
+  postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+- name: ensure user does not have unnecessary privilege
+  become: yes
+  become_user: postgres
+  postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+- name: ensure no other user can access the database
+  become: yes
+  become_user: postgres
+  postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent

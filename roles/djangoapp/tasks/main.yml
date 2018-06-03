@@ -1,0 +1,15 @@
+---
+
+#- name: Install requirement
+#  become: yes
+#  become_user: "{{user}}"  
+#  shell: "source {{virtualenv_directory}}/bin/activate && pip install psycopg2-binary"
+
+- git: 
+    repo: https://github.com/gaetandz/my_django_repo
+    dest: "{{django_directory}}"
+
+- name: run server
+  become: yes
+  become_user: django
+  shell: "source {{virtualenv_directory}}/bin/activate && {{django_directory}}/manage.py migrate && {{django_directory}}/manage.py runserver 0.0.0.0:8000"
