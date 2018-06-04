@@ -12,12 +12,6 @@
   roles:
         - dbservers
 
-- name: configure django app
-  hosts: webservers
-  remote_user: root
-  roles:
-        - djangoapp
-
 #- name: install and configure virtualenv
 #  hosts: webservers
 #  remote_user: root
